@@ -23,21 +23,21 @@ public abstract class SyncZkData implements Watcher {
     private static final Logger logger = LoggerFactory.getLogger(SyncZkData.class);
     protected ZooKeeper zk = null;
 
-    private int SESSION_TIMEOUT = 10000;
+//    private int SESSION_TIMEOUT = 10000;
     /**
      * zookeeper服务器地址
      */
-    private String ZK_ADDR = "127.0.0.1:2181";
-
-    private String ZK_PATH = "/config/data";
+//    private String ZK_ADDR = "127.0.0.1:2181";
+//
+//    private String ZK_PATH = "/config/data";
 
     private Set<String> pathSet;
 
-    public SyncZkData(String ZK_ADDR, String ZK_PATH) {
-        this.ZK_ADDR = ZK_ADDR;
-        this.ZK_PATH = ZK_PATH;
+    public SyncZkData() {
+//        this.ZK_ADDR = ZK_ADDR;
+//        this.ZK_PATH = ZK_PATH;
         this.pathSet = new HashSet<>();
-        this.createConnection(this.ZK_ADDR, SESSION_TIMEOUT);
+
 //        readChildrenData(this.ZK_PATH, true);
     }
 
@@ -73,14 +73,15 @@ public abstract class SyncZkData implements Watcher {
     }
 
     protected void readChildrenData(String parentPath, boolean needWatch) {
-        readData(parentPath, needWatch);
+//        readData(parentPath, needWatch);
         List<String> subPaths = getChildren(parentPath, true);
         if (null != subPaths) {
             subPaths.forEach(subPath -> {
                 String nodePath = String.format("%s/%s", parentPath, subPath);
+                logger.info("get child nodePath:{}", nodePath);
                 if (!pathSet.contains(nodePath)) {
                     pathSet.add(nodePath);
-                    readData(nodePath, true);
+                    readData(nodePath, needWatch);
                 }
             });
         }

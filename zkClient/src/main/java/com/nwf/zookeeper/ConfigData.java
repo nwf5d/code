@@ -20,13 +20,14 @@ public class ConfigData extends SyncZkData {
     private static Logger logger = LoggerFactory.getLogger(ConfigData.class);
     private static final String ZK_ADDR = "127.0.0.1:2181";
     private static final String ZK_PATH = "/config/data";
+    private int SESSION_TIMEOUT = 10000;
 
     private static ConfigData instance;
     private Map<String, String> dataMap;
 
     public static ConfigData getInstance(){
         if (null == instance) {
-            instance = new ConfigData(ZK_ADDR, ZK_PATH);
+            instance = new ConfigData();
         }
         return instance;
     }
@@ -36,13 +37,15 @@ public class ConfigData extends SyncZkData {
         dataMap.forEach((key,value)->{
             strList.add(String.format("%s:%s", key, value));
         });
+//        logger.info("dataMap:{}, thread:{}", Joiner.on("|").join(strList), Thread.currentThread().toString());
         logger.info("dataMap:{}", Joiner.on("|").join(strList));
-        System.out.println("dataMap:" + Joiner.on("|").join(strList));
+//        System.out.println("dataMap:" + Joiner.on("|").join(strList));
     }
 
-    private ConfigData(String ZK_ADDR, String ZK_PATH) {
-        super(ZK_ADDR, ZK_PATH);
+    private ConfigData() {
+        super();
         dataMap = new ConcurrentHashMap<>();
+        createConnection(ZK_ADDR, SESSION_TIMEOUT);
         readChildrenData(ZK_PATH, true);
     }
 
