@@ -49,7 +49,7 @@ public abstract class BasicWatcher implements Watcher {
      * @param sessionTimeout Session超时时间
      */
     public void createConnection(String connectAddr, int sessionTimeout) {
-//        this.releaseConnection();
+        this.releaseConnection();
         try {
             //this表示把当前对象进行传递到其中去（也就是在主函数里实例化的new ZooKeeperWatcher()实例对象）
             zk = new ZooKeeper(connectAddr, sessionTimeout, this);
@@ -109,9 +109,10 @@ public abstract class BasicWatcher implements Watcher {
     private List<String> getChildren(String path, boolean needWatch) {
         try {
             System.out.println("读取子节点操作...");
+            logger.info("读取子节点");
             return this.zk.getChildren(path, needWatch);
         } catch (Exception ex) {
-//            logger.error("getChildren error. Exception:", ex);
+            logger.error("getChildren error. Exception:", ex);
             return null;
         }
     }
@@ -151,6 +152,7 @@ public abstract class BasicWatcher implements Watcher {
             case Expired:
                 System.out.println(logPrefix + "会话失效");
                 logger.info("{} 会话失效", logPrefix);
+                break;
             default:
                 logger.info("{} default status.", keeperState.toString());
         }

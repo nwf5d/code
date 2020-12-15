@@ -33,11 +33,19 @@ public class DataConfigWatcher implements Watcher {
      */
     private ZooKeeper zk = null;
 
-
     private Map<String, String> dataMap;
     private Set<String> pathSet;
 
-    public DataConfigWatcher() {
+    private static DataConfigWatcher instance;
+
+    public static DataConfigWatcher getInstance() {
+        if (null == instance) {
+            instance = new DataConfigWatcher();
+        }
+        return instance;
+    }
+
+    private DataConfigWatcher() {
         pathSet = new HashSet<>();
         dataMap = new HashMap<>();
         this.createConnection(ZK_ADDR, SESSION_TIMEOUT);
@@ -45,7 +53,7 @@ public class DataConfigWatcher implements Watcher {
     }
 
     private void readChildrenData(String parentPath, boolean needWatch) {
-        readData(parentPath, needWatch);
+//        readData(parentPath, needWatch);
         List<String> subPaths = getChildren(parentPath, true);
         if (null != subPaths) {
             subPaths.forEach(subPath -> {
@@ -72,8 +80,10 @@ public class DataConfigWatcher implements Watcher {
             zk = new ZooKeeper(connectAddr, sessionTimeout, this);
             System.out.println(LOG_PREFIX_OF_MAIN + "开始连接ZK服务器");
 //            connectedSemaphore.await();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            System.out.println(ex);
+            logger.error("Exception:", ex);
+//            e.printStackTrace();
         }
     }
 
@@ -234,6 +244,7 @@ public class DataConfigWatcher implements Watcher {
 
     public static void main(String[] args) throws Exception {
         DataConfigWatcher dataConfig = new DataConfigWatcher();
+        dataConfig.outputMap();
         Thread.sleep(1000000);
         System.out.println("end");
     }
